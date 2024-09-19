@@ -11,6 +11,17 @@ import { TodosService } from '../../Services/todos.service';
 })
 export class TodoItemComponent {
   @Input() todo!: Todo;
+  todos!: Todo[];
 
-  constructor(todosService: TodosService) {}
+  constructor(private todosService: TodosService) {
+    // Constructor is used for dependency injection, avoid complex logic here
+  }
+
+  ngOnInit() {
+    this.todos = this.todosService.getTodos();
+  }
+
+  handleDeleteClick(todo: Todo) {
+    this.todosService.deleteTodo(todo);
+  }
 }

@@ -48,7 +48,7 @@ describe('DisplayTodosComponent', () => {
 
     //check if all the items have correct title
     spectator.component.todos.forEach((todo) => {
-      let listItem = spectator.query(`#item${todo.id}`); //query todo item via id
+      let listItem = spectator.query(`#todo${todo.id}`); //query todo item via id
       if (listItem) expect(listItem.textContent).toContain(todo.title);
     });
   });
