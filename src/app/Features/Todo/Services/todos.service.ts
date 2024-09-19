@@ -20,4 +20,23 @@ export class TodosService {
   getTodos(): Todo[] {
     return this.todos;
   }
+
+  deleteTodo(todo: Todo): Boolean {
+    let index = this.todos.indexOf(todo);
+    if (index === -1) {
+      return false;
+    }
+
+    this.todos.splice(index, 1);
+    return true;
+  }
+
+  addTodo(todo: Todo): Boolean {
+    const exists = this.todos.some((obj) => obj.id === todo.id);
+
+    if (exists) return false;
+
+    this.todos.unshift(todo);
+    return true;
+  }
 }

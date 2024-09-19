@@ -22,4 +22,19 @@ describe('TodosService', () => {
     expect(todos).toExist;
     expect(todos.length).toEqual(5);
   });
+
+  it('should return true and add the todo to the list when a valid todo is added', () => {
+    const todo = { id: 99, title: 'New Todo', active: true };
+    const result = spectator.service.addTodo(todo);
+
+    expect(result).toBe(true);
+    expect(spectator.service.getTodos()[0]).toEqual(todo);
+  });
+
+  it('should return false if id already exists', () => {
+    const todo = { id: 1, title: 'New Todo', active: true };
+    const result = spectator.service.addTodo(todo);
+
+    expect(result).toBe(false);
+  });
 });
