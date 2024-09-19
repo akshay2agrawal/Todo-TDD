@@ -1,3 +1,4 @@
 <ul *ngFor="let todo of todos" id="todo-list">
+  <app-todo-item [todo]="todo"></app-todo-item>
   <li id="item{{ todo.id }}">{{ todo.title }}</li>
 </ul>

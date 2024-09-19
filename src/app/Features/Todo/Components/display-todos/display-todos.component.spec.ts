@@ -1,63 +1,55 @@
-import {
-  byTestId,
-  createComponentFactory,
-  Spectator,
-} from '@ngneat/spectator/jest';
-
+import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { TodosService } from '../../Services/todos.service';
 import { DisplayTodosComponent } from './display-todos.component';
 import { Todo } from '../../Services/Models/Todo';
 
 describe('DisplayTodosComponent', () => {
   let spectator: Spectator<DisplayTodosComponent>;
-  let todosServiceMock: TodosService;
-  let todosService: TodosService;
+  let todosService: jest.Mocked<TodosService>;
+  // let todosServiceMock: TodosService;
 
   const createComponent = createComponentFactory({
     component: DisplayTodosComponent,
     mocks: [TodosService],
+    detectChanges: false, //prevents onInit to be called at the start. Will only be executed when detectChanges is called.
   });
+
   const todos = [
-    { id: 1, title: 'Test Todo 1', active: false },
-    { id: 2, title: 'Test Todo 2', active: true },
+    { id: 0, title: 'Test Todo 1', active: false },
+    { id: 11, title: 'Test Todo 2', active: true },
   ];
 
   beforeEach(async () => {
     spectator = createComponent();
-    // todosService = spectator.inject(TodosService); // Injecting the service
-    spectator.inject(TodosService).getTodos.mockReturnValue(todos);
   });
 
   it('should create', () => {
     expect(spectator.component).toBeTruthy();
   });
 
-  it('obtain todos from todoService', () => {
+  it('obtain todos from todosService', () => {
+    //pass mock return value for the getTodos method of the todosService
     spectator.inject(TodosService).getTodos.mockReturnValue(todos);
-    // expect(mockTodos).toEqual(todos)
+
+    // Trigger onInit using detectChanges
+    spectator.detectChanges();
+
     expect(spectator.component.todos).toEqual(todos);
   });
 
   // below test case is incomplete. Use id to get all the items
   it('displays all todos in a list', () => {
-    let todoList = spectator.queryAll('#todo-list > *');
-    // let todo!: Todo;
-    let getTodos = todosService.getTodos;
-    // let todos = getTodos();
-    // console.log(typeof getTodos);
-    // for (let i = 0; i < todos.length; i++) {
-    //   let todo = spectator.query(`#item${i}`);
-    //   expect(todo).toEqual(todos[i]);
-    // }
+    spectator.inject(TodosService).getTodos.mockReturnValue(todos);
+    spectator.detectChanges();
 
-    // working up until here
-    expect(todoList.length).toEqual(todosService.todos.length);
-    todoList.forEach((todo, index) => {
-      console.log(todo, index);
-      let title = spectator.query('li')?.textContent;
-      if (title) {
-        expect(title).toEqual(todosService.todos[index].title);
-      }
+    // checking todo list length
+    let todoList = spectator.queryAll('#todo-list > *');
+    expect(todoList.length).toEqual(spectator.component.todos.length);
+
+    //check if all the items have correct title
+    spectator.component.todos.forEach((todo) => {
+      let listItem = spectator.query(`#item${todo.id}`); //query todo item via id
+      if (listItem) expect(listItem.textContent).toContain(todo.title);
     });
   });
 });
