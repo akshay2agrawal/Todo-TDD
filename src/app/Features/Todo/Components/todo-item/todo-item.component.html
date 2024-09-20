@@ -1,5 +1,18 @@
 <div class="todo-item">
-  <h5 id="todo{{ todo.id }}" class="mx-3">{{ todo.title }}</h5>
+  <input
+    type="checkbox"
+    id="active{{ todo.id }}"
+    name="active{{ todo.id }}"
+    (click)="handleCheckBox(todo)"
+  />
+  <label
+    for="active{{ todo.id }}"
+    id="todo{{ todo.id }}"
+    class="mx-3"
+    [ngClass]="!todo.active ? 'strike' : ''"
+  >
+    {{ todo.title }}
+  </label>
   <button
     class="btn btn-danger"
     id="delete{{ todo.id }}"

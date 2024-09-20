@@ -22,7 +22,7 @@ export class TodosService {
   }
 
   deleteTodo(todo: Todo): Boolean {
-    let index = this.todos.indexOf(todo);
+    const index = this.todos.findIndex((t) => t.id === todo.id);
     if (index === -1) {
       return false;
     }
@@ -38,5 +38,13 @@ export class TodosService {
 
     this.todos.unshift(todo);
     return true;
+  }
+
+  changeActive(todo: Todo): Todo | Boolean {
+    const index = this.todos.findIndex((t) => t.id === todo.id);
+    if (index === -1) return false;
+
+    this.todos[index].active = !this.todos[index].active;
+    return this.todos[index];
   }
 }

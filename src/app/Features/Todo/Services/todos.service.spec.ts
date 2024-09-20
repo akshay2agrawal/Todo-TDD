@@ -31,10 +31,24 @@ describe('TodosService', () => {
     expect(spectator.service.getTodos()[0]).toEqual(todo);
   });
 
-  it('should return false if id already exists', () => {
+  it('should return false if id already exists in addTodo', () => {
     const todo = { id: 1, title: 'New Todo', active: true };
     const result = spectator.service.addTodo(todo);
 
     expect(result).toBe(false);
+  });
+
+  it('should return false if todo does not exist for changeActive', () => {
+    const todo = { id: 100, title: 'Buy groceries', active: true };
+    const result = spectator.service.changeActive(todo);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should change active', () => {
+    const todo = { id: 1, title: 'Buy groceries', active: true };
+    const result = spectator.service.changeActive(todo);
+
+    expect(result).toEqual({ id: 1, title: 'Buy groceries', active: false });
   });
 });

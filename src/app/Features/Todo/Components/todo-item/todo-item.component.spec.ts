@@ -11,10 +11,6 @@ describe('TodoItemComponent', () => {
     detectChanges: false,
   });
 
-  const todos = [
-    { id: 0, title: 'Test Todo 1', active: false },
-    { id: 11, title: 'Test Todo 2', active: true },
-  ];
   beforeEach(async () => {
     spectator = createComponent();
   });
@@ -65,5 +61,45 @@ describe('TodoItemComponent', () => {
     if (buttonElement) spectator.click(buttonElement);
 
     expect(spectator.component.handleDeleteClick).toHaveBeenCalledWith(todo);
+  });
+
+  it('should have a checkbox', () => {
+    const todo = { id: 11, title: 'Test Todo 2', active: true };
+    spectator.setInput('todo', todo);
+    spectator.detectChanges();
+    let checkboxElement = spectator.query(`#active${todo.id}`);
+    expect(checkboxElement).toExist();
+  });
+
+  it('should call handleCheckBox when checkbox is clicked', () => {
+    todosService = spectator.inject(TodosService); //Getting the mocked Service
+    const todo = { id: 11, title: 'Test Todo 2', active: true };
+    spectator.setInput('todo', todo);
+
+    // Spy on the handleCheckBox method
+    jest.spyOn(spectator.component, 'handleCheckBox');
+
+    let buttonElement = spectator.query(`#active${todo.id}`);
+    if (buttonElement) spectator.click(buttonElement);
+
+    expect(spectator.component.handleCheckBox).toHaveBeenCalled();
+  });
+
+  it('should have strike class when active false', () => {
+    const todo = { id: 11, title: 'Test Todo 2', active: false };
+    spectator.setInput('todo', todo);
+
+    let checkboxElement = spectator.query(`#item${todo.id}`);
+    if (checkboxElement)
+      expect(checkboxElement.getAttribute('class')).toContain('strike');
+  });
+
+  it('should have not have strike class when active true', () => {
+    const todo = { id: 11, title: 'Test Todo 2', active: true };
+    spectator.setInput('todo', todo);
+
+    let checkboxElement = spectator.query(`#item${todo.id}`);
+    if (checkboxElement)
+      expect(checkboxElement.getAttribute('class')).not.toContain('strike');
   });
 });
