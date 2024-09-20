@@ -11,7 +11,7 @@
     class="mx-3"
     [ngClass]="!todo.active ? 'strike' : ''"
   >
-    {{ todo.title }}
+    <h4 class="my-3" (click)="goToTodoDetail()">{{ todo.title }}</h4>
   </label>
   <button
     class="btn btn-danger"

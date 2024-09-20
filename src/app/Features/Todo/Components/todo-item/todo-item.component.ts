@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Todo } from '../../Services/Models/Todo';
 import { TodosService } from '../../Services/todos.service';
 import { CommonModule } from '@angular/common';
-
+import { Route, Router } from '@angular/router';
 @Component({
   selector: 'app-todo-item',
   standalone: true,
@@ -14,7 +14,7 @@ export class TodoItemComponent {
   @Input() todo!: Todo;
   todos!: Todo[];
 
-  constructor(private todosService: TodosService) {
+  constructor(private todosService: TodosService, private router: Router) {
     // Constructor is used for dependency injection, avoid complex logic here
   }
 
@@ -30,5 +30,9 @@ export class TodoItemComponent {
 
   handleCheckBox(todo: Todo) {
     this.todosService.changeActive(todo);
+  }
+
+  goToTodoDetail() {
+    this.router.navigate(['/todo', this.todo.id]); // Navigate to /todo/:id
   }
 }

@@ -52,4 +52,8 @@ export class TodosService {
     this.todos[index].active = !this.todos[index].active;
     return this.todos[index];
   }
+
+  getTodoById(id: number): Todo | undefined {
+    return this.todos.find((todo) => todo.id === id);
+  }
 }

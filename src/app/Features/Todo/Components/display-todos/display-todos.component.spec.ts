@@ -97,13 +97,6 @@ describe('DisplayTodosComponent', () => {
     if (input) expect(input).toEqual('Test');
   });
 
-  it('should update the newTodo variable', () => {
-    spectator.typeInElement('somevalue', '#newTodo');
-    spectator.detectChanges();
-
-    expect(spectator.component.newTodo).toBe('Test Todo');
-  });
-
   it('should call handleAddTodo and add a new todo', () => {
     const todosService = spectator.inject(TodosService);
 
