@@ -18,26 +18,31 @@ export class TodosService {
   }
 
   getTodos(): Todo[] {
+    console.log('>inside getTodos');
     return this.todos;
   }
 
   deleteTodo(todo: Todo): Boolean {
+    console.log('>inside deleteTodo');
     const index = this.todos.findIndex((t) => t.id === todo.id);
     if (index === -1) {
       return false;
     }
 
     this.todos.splice(index, 1);
+    console.log(this.todos);
     return true;
   }
 
-  addTodo(todo: Todo): Boolean {
+  addTodo(todo: Todo): Todo[] | Boolean {
+    console.log('addtodo called');
+    console.log(todo);
     const exists = this.todos.some((obj) => obj.id === todo.id);
 
     if (exists) return false;
 
     this.todos.unshift(todo);
-    return true;
+    return this.todos;
   }
 
   changeActive(todo: Todo): Todo | Boolean {

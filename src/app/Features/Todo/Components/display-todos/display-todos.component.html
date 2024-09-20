@@ -1,7 +1,23 @@
-<div class="conatiner my-3">
+<div class="conatiner my-3 mx-3">
   <h3 class="text-center">My Todos</h3>
-  <ul *ngFor="let todo of todos" id="todo-list">
+  <form action="/action_page.php" (ngSubmit)="handleAddTodo()">
+    <input
+      type="text"
+      id="newTodo"
+      name="newTodo"
+      placeholder="Add Todo"
+      [(ngModel)]="newTodo"
+    />
+    <input
+      type="submit"
+      value="Add"
+      class="btn btn-primary mx-3"
+      id="addTodo"
+    />
+  </form>
+  <ul id="todo-list">
+    @for (todo of todos; track $index) {
     <app-todo-item [todo]="todo"></app-todo-item>
-    <!-- <li id="item{{ todo.id }}">{{ todo.title }}</li> -->
+    }
   </ul>
 </div>

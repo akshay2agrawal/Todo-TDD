@@ -27,7 +27,7 @@ describe('TodosService', () => {
     const todo = { id: 99, title: 'New Todo', active: true };
     const result = spectator.service.addTodo(todo);
 
-    expect(result).toBe(true);
+    expect(result).toEqual(spectator.service.getTodos());
     expect(spectator.service.getTodos()[0]).toEqual(todo);
   });
 
