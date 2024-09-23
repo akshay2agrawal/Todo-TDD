@@ -3,6 +3,11 @@ import { DisplayTodosComponent } from './Features/Todo/Components/display-todos/
 import { DisplayTodoDetailComponent } from './Features/Todo/Components/display-todo-detail/display-todo-detail.component';
 
 export const routes: Routes = [
-  { path: 'todo', component: DisplayTodosComponent },
-  { path: 'todo/:id', component: DisplayTodoDetailComponent },
+  { path: '', redirectTo: '/todo', pathMatch: 'full' },
+  {
+    path: 'todo',
+    loadChildren: () =>
+      import('./Features/Todo/Modules/todo.module').then((m) => m.TodoModule),
+  },
+  { path: '**', redirectTo: '/todo' },
 ];
