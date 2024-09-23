@@ -21,11 +21,13 @@ export class DisplayTodosComponent implements OnInit {
   }
 
   handleAddTodo() {
+    this.todos = this.todosService.getTodos();
     const todo = {
-      id: this.todosService.getTodos().length + 1,
+      id: this.todos.length,
       title: this.newTodo,
       active: true,
     };
+    console.log(todo);
     let response = this.todosService.addTodo(todo);
     this.newTodo = '';
   }

@@ -18,7 +18,6 @@ export class TodosService {
   }
 
   getTodos(): Todo[] {
-    console.log('>inside getTodos');
     return this.todos;
   }
 
@@ -30,6 +29,9 @@ export class TodosService {
     }
 
     this.todos.splice(index, 1);
+    this.todos.map((todo, index) => {
+      todo.id = index;
+    });
     console.log(this.todos);
     return true;
   }
@@ -41,7 +43,8 @@ export class TodosService {
 
     if (exists) return false;
 
-    this.todos.unshift(todo);
+    this.todos.push(todo);
+    console.log(this.todos);
     return this.todos;
   }
 

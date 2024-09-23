@@ -1,20 +1,23 @@
-<div class="todo-item my-3">
+<div class="flex my-3">
   <input
     type="checkbox"
     id="active{{ todo.id }}"
     name="active{{ todo.id }}"
     (click)="handleCheckBox(todo)"
+    required="true"
+    [checked]="!todo.active"
   />
   <label
     for="active{{ todo.id }}"
     id="todo{{ todo.id }}"
-    class="mx-3"
-    [ngClass]="!todo.active ? 'strike' : ''"
+    class="mx-3 row-auto text-center text-red-800"
+    [ngClass]="!todo.active ? 'line-through' : ''"
   >
     <h4 class="my-3" (click)="goToTodoDetail()">{{ todo.title }}</h4>
   </label>
+
   <button
-    class="btn btn-danger"
+    class="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
     id="delete{{ todo.id }}"
     (click)="handleDeleteClick(todo)"
   >

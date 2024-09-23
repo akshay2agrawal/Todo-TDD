@@ -1,11 +1,12 @@
-<div class="conatiner my-3 mx-3">
-  <h3 class="text-center">My Todos</h3>
+<div class="conatiner my-3 mx-3 flex flex-col items-center mb-auto">
+  <h3 class="text-blue-400 text-4xl mb-5">My Todos</h3>
   <form action="/action_page.php" (ngSubmit)="handleAddTodo()">
     <input
       type="text"
       id="newTodo"
       name="newTodo"
       placeholder="Add Todo"
+      class="border-2 border-rose-500 rounded-lg"
       [(ngModel)]="newTodo"
     />
     <input

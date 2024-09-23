@@ -23,9 +23,7 @@ export class TodoItemComponent {
   }
 
   handleDeleteClick(todo: Todo) {
-    console.log('>inside handleDEleteTodo');
     let retValue = this.todosService.deleteTodo(todo);
-    console.log('>after service method call', retValue);
   }
 
   handleCheckBox(todo: Todo) {
