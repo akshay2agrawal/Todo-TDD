@@ -18,8 +18,8 @@ export class TodoItemComponent {
     // Constructor is used for dependency injection, avoid complex logic here
   }
 
-  ngOnInit() {
-    this.todos = this.todosService.getTodos();
+  async ngOnInit() {
+    this.todos = await this.todosService.getTodos();
   }
 
   handleDeleteClick(todo: Todo) {

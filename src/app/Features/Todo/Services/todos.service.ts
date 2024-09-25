@@ -1,37 +1,44 @@
 import { Injectable } from '@angular/core';
 import { Todo } from './Models/Todo';
+import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import type { AppRouter } from '../../../../../server/server.ts';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodosService {
-  todos!: Todo[];
+  todos: Todo[] = [];
 
-  constructor() {
-    this.todos = [
-      { id: 1, title: 'Buy groceries', active: true },
-      { id: 2, title: 'Do laundry', active: true },
-      { id: 3, title: 'Finish homework', active: true },
-      { id: 4, title: 'Meet with friends', active: true },
-      { id: 5, title: 'Clean the house', active: true },
-    ];
-  }
+  constructor() {}
 
-  getTodos(): Todo[] {
+  async getTodos(): Promise<Todo[]> {
+    try {
+      const response = await client.getTodo.query();
+      this.todos = response; // Assign fetched todos to the array
+    } catch (error) {
+      console.error('Error fetching todos:', error); // Handle any errors
+    }
     return this.todos;
   }
 
-  deleteTodo(todo: Todo): Boolean {
+  async deleteTodo(todo: Todo): Promise<Boolean> {
     console.log('>inside deleteTodo');
     const index = this.todos.findIndex((t) => t.id === todo.id);
     if (index === -1) {
       return false;
     }
 
-    this.todos.splice(index, 1);
-    this.todos.map((todo, index) => {
-      todo.id = index;
-    });
+    // this.todos.splice(index, 1);
+    // this.todos.map((todo, index) => {
+    //   todo.id = index;
+    // });
+    try {
+      const response = await client.getTodo.query();
+      this.todos = response; //Assign fetched todos to the array
+    } catch (error) {
+      console.error('Error fetching todos:', error); // Handle any errors
+    }
+
     console.log(this.todos);
     return true;
   }
@@ -59,4 +66,22 @@ export class TodosService {
   getTodoById(id: number): Todo | undefined {
     return this.todos.find((todo) => todo.id === id);
   }
+
+  // async fetchTodos(): Promise<void> {
+  //   try {
+  //     const response = await client.hello.query();
+  //     this.todos = response; // Assign fetched todos to the array
+  //   } catch (error) {
+  //     console.error('Error fetching todos:', error); // Handle any errors
+  //   }
+  // }
 }
+
+// Create a tRPC client
+const client = createTRPCProxyClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: 'http://localhost:4000/trpc',
+    }),
+  ],
+});

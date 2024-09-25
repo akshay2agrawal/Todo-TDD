@@ -16,12 +16,12 @@ export class DisplayTodosComponent implements OnInit {
   newTodo!: string;
   constructor(private todosService: TodosService) {}
 
-  ngOnInit() {
-    this.todos = this.todosService.getTodos();
+  async ngOnInit() {
+    this.todos = await this.todosService.getTodos();
   }
 
-  handleAddTodo() {
-    this.todos = this.todosService.getTodos();
+  async handleAddTodo() {
+    this.todos = await this.todosService.getTodos();
     const todo = {
       id: this.todos.length,
       title: this.newTodo,
