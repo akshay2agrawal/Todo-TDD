@@ -18,7 +18,7 @@
   </form>
   <ul id="todo-list">
     @for (todo of todos; track $index) {
-    <app-todo-item [todo]="todo"></app-todo-item>
+    <app-todo-item [todo]="todo" (change)="updateTodos($event)"></app-todo-item>
     }
   </ul>
 </div>

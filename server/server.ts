@@ -36,6 +36,23 @@ const appRouter = t.router({
       console.log(todos);
       return todos;
     }),
+  addTodo: t.procedure
+    .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
+    .mutation(({ input }) => {
+      console.log('> Adding todo: ', input);
+      todos.push(input);
+      console.log('> Updated Todos: ', todos);
+      return todos;
+    }),
+  changeActive: t.procedure
+    .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
+    .mutation(({ input }) => {
+      console.log('> changing  todo: ', input);
+      const index = todos.findIndex((t) => t.id === input.id);
+      todos[index].active = !todos[index].active;
+      console.log('> changing Todos: ', todos);
+      return todos;
+    }),
 });
 
 // Export the router type definition

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Todo } from '../../Services/Models/Todo';
 import { TodosService } from '../../Services/todos.service';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { Route, Router } from '@angular/router';
 })
 export class TodoItemComponent {
   @Input() todo!: Todo;
+  @Output() change: EventEmitter<boolean> = new EventEmitter();
   todos!: Todo[];
 
   constructor(private todosService: TodosService, private router: Router) {
@@ -22,12 +23,14 @@ export class TodoItemComponent {
     this.todos = await this.todosService.getTodos();
   }
 
-  handleDeleteClick(todo: Todo) {
-    let retValue = this.todosService.deleteTodo(todo);
+  async handleDeleteClick(todo: Todo) {
+    let retValue = await this.todosService.deleteTodo(todo);
+    this.change.emit(true);
   }
 
   handleCheckBox(todo: Todo) {
     this.todosService.changeActive(todo);
+    this.change.emit(true);
   }
 
   goToTodoDetail() {

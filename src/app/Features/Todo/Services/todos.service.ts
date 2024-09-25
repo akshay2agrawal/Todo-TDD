@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Todo } from './Models/Todo';
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from '../../../../../server/server.ts';
+import type { AppRouter } from '../../../../../server/server';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +14,7 @@ export class TodosService {
   async getTodos(): Promise<Todo[]> {
     try {
       const response = await client.getTodo.query();
+      console.log(response);
       this.todos = response; // Assign fetched todos to the array
     } catch (error) {
       console.error('Error fetching todos:', error); // Handle any errors
@@ -22,18 +23,13 @@ export class TodosService {
   }
 
   async deleteTodo(todo: Todo): Promise<Boolean> {
-    console.log('>inside deleteTodo');
+    console.log('>inside deleteTodo', todo);
     const index = this.todos.findIndex((t) => t.id === todo.id);
     if (index === -1) {
       return false;
     }
-
-    // this.todos.splice(index, 1);
-    // this.todos.map((todo, index) => {
-    //   todo.id = index;
-    // });
     try {
-      const response = await client.getTodo.query();
+      const response = await client.deleteTodo.mutate(todo);
       this.todos = response; //Assign fetched todos to the array
     } catch (error) {
       console.error('Error fetching todos:', error); // Handle any errors
@@ -43,42 +39,45 @@ export class TodosService {
     return true;
   }
 
-  addTodo(todo: Todo): Todo[] | Boolean {
+  async addTodo(todo: Todo): Promise<Boolean | Todo[]> {
     console.log('addtodo called');
     console.log(todo);
     const exists = this.todos.some((obj) => obj.id === todo.id);
 
     if (exists) return false;
 
-    this.todos.push(todo);
+    try {
+      const response = await client.addTodo.mutate(todo);
+      this.todos = response; //Assign fetched todos to the array
+    } catch (error) {
+      console.error('Error fetching todos:', error); // Handle any errors
+    }
     console.log(this.todos);
     return this.todos;
   }
 
-  changeActive(todo: Todo): Todo | Boolean {
+  async changeActive(todo: Todo): Promise<Boolean | Todo> {
     const index = this.todos.findIndex((t) => t.id === todo.id);
     if (index === -1) return false;
 
-    this.todos[index].active = !this.todos[index].active;
+    // this.todos[index].active = !this.todos[index].active;
+
+    try {
+      const response = await client.changeActive.mutate(todo);
+      this.todos = response; //Assign fetched todos to the array
+    } catch (error) {
+      console.error('Error fetching todos:', error); // Handle any errors
+    }
     return this.todos[index];
   }
 
   getTodoById(id: number): Todo | undefined {
     return this.todos.find((todo) => todo.id === id);
   }
-
-  // async fetchTodos(): Promise<void> {
-  //   try {
-  //     const response = await client.hello.query();
-  //     this.todos = response; // Assign fetched todos to the array
-  //   } catch (error) {
-  //     console.error('Error fetching todos:', error); // Handle any errors
-  //   }
-  // }
 }
 
 // Create a tRPC client
-const client = createTRPCProxyClient<AppRouter>({
+export const client = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
       url: 'http://localhost:4000/trpc',

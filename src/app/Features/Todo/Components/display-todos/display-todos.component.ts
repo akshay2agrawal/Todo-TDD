@@ -18,17 +18,29 @@ export class DisplayTodosComponent implements OnInit {
 
   async ngOnInit() {
     this.todos = await this.todosService.getTodos();
+    console.log(this.todos);
   }
 
   async handleAddTodo() {
+    console.log('add todo clicked!');
     this.todos = await this.todosService.getTodos();
     const todo = {
       id: this.todos.length,
       title: this.newTodo,
       active: true,
     };
-    console.log(todo);
-    let response = this.todosService.addTodo(todo);
+    console.log(this.todos);
+    let response = await this.todosService.addTodo(todo);
+    this.updateTodos(true);
     this.newTodo = '';
   }
+
+  async updateTodos(change: boolean) {
+    this.todos = await this.todosService.getTodos();
+  }
+}
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
