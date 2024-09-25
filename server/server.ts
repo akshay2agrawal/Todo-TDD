@@ -53,6 +53,16 @@ const appRouter = t.router({
       console.log('> changing Todos: ', todos);
       return todos;
     }),
+  getTodoById: t.procedure
+    .input(z.object({ id: z.number() })) // Input validation with Zod
+    .query(({ input }) => {
+      console.log('>Fetching todo by id: ', input.id);
+      const todo = todos.find((todo) => todo.id === input.id);
+      if (!todo) {
+        throw new Error(`Item with id ${input.id} not found`);
+      }
+      return todo; // Returns the todo with the matching ID
+    }),
 });
 
 // Export the router type definition

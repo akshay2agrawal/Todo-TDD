@@ -17,10 +17,10 @@ export class DisplayTodoDetailComponent {
     private route: ActivatedRoute,
     private todosService: TodosService // Inject TodosService to fetch todo data
   ) {}
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Access the ID from the route
     const id = +this.route.snapshot.paramMap.get('id')!; // Convert the 'id' to a number
     // Fetch the Todo item by its ID
-    this.todo = this.todosService.getTodoById(id);
+    this.todo = await this.todosService.getTodoById(id);
   }
 }

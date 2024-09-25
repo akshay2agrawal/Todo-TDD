@@ -71,7 +71,14 @@ export class TodosService {
     return this.todos[index];
   }
 
-  getTodoById(id: number): Todo | undefined {
+  async getTodoById(id: number): Promise<Todo | undefined> {
+    try {
+      const response = await client.getTodoById.query({ id });
+      //Assign fetched todos to the array
+    } catch (error) {
+      console.error('Error fetching todos:', error); // Handle any errors
+    }
+
     return this.todos.find((todo) => todo.id === id);
   }
 }
