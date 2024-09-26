@@ -18,25 +18,25 @@ export class DisplayTodosComponent implements OnInit {
 
   async ngOnInit() {
     this.todos = await this.todosService.getTodos();
-    console.log(this.todos);
+    console.log(`Display Todos Component ngOnInit: \n `, this.todos);
   }
 
   async handleAddTodo() {
     console.log('add todo clicked!');
     this.todos = await this.todosService.getTodos();
     const todo = {
-      id: this.todos.length,
+      id: this.todos.length + 1,
       title: this.newTodo,
       active: true,
     };
-    console.log(this.todos);
+    console.log(this.todos, 'todo:', todo);
     let response = await this.todosService.addTodo(todo);
     this.updateTodos(true);
     this.newTodo = '';
   }
 
   async updateTodos(change: boolean) {
-    this.todos = await this.todosService.getTodos();
+    if (change) this.todos = await this.todosService.getTodos();
   }
 }
 export function sleep(ms: number): Promise<void> {

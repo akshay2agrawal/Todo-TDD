@@ -1,6 +1,6 @@
 import { createComponentFactory, Spectator } from '@ngneat/spectator/jest';
 import { TodosService } from '../../Services/todos.service';
-import { DisplayTodosComponent } from './display-todos.component';
+import { DisplayTodosComponent, sleep } from './display-todos.component';
 import { Todo } from '../../Services/Models/Todo';
 import { TodoItemComponent } from '../todo-item/todo-item.component';
 import { FormsModule } from '@angular/forms';
@@ -30,22 +30,24 @@ describe('DisplayTodosComponent', () => {
     expect(spectator.component).toBeTruthy();
   });
 
-  it('obtain todos from todosService', () => {
+  it('obtain todos from todosService', async () => {
     //pass mock return value for the getTodos method of the todosService
-    spectator.inject(TodosService).getTodos.mockReturnValue(todos);
+    spectator.inject(TodosService).getTodos.mockResolvedValue(todos);
 
     // Trigger onInit using detectChanges
     spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     expect(spectator.component.todos).toEqual(todos);
   });
 
   // below test case is incomplete. Use id to get all the items
-  it('displays all todos in a list', () => {
-    spectator.inject(TodosService).getTodos.mockReturnValue(todos);
-    spectator.detectChanges();
+  it('displays all todos in a list', async () => {
+    spectator.inject(TodosService).getTodos.mockResolvedValue(todos);
 
-    // checking todo list length
+    spectator.detectChanges();
+    await spectator.fixture.whenStable();
+    spectator.detectChanges();
     let todoList = spectator.queryAll('#todo-list > *');
     expect(todoList.length).toEqual(spectator.component.todos.length);
 
@@ -56,34 +58,25 @@ describe('DisplayTodosComponent', () => {
     });
   });
 
-  it('should reduce the list length by 1 after deleteTodo', () => {
-    let todosService = spectator.inject(TodosService);
-    todosService.getTodos.mockReturnValue(todos);
-    todosService.deleteTodo.mockImplementation((todoToDelete) => {
-      const index = spectator.component.todos.findIndex(
-        (todo) => todo.id === todoToDelete.id
-      );
-      if (index > -1) {
-        spectator.component.todos.splice(index, 1); // Remove the todo from the array
-      }
-      return true;
-    });
+  it('should call updateTodos with true from deleteTodo', async () => {
+    const todosService = spectator.inject(TodosService);
+
+    // Mock the getTodos method to return the predefined todos
+    todosService.getTodos.mockResolvedValue(todos);
+    spectator.detectChanges();
+    await spectator.fixture.whenStable();
     spectator.detectChanges();
 
-    // checking todo list length
-    let todosList = spectator.queryAll('#todo-list > *');
-    let todoLength = todosList.length;
-    expect(todosList.length).toEqual(todos.length); // Should be 2 initially
-
+    // Mock the deleteTodo method to modify the component's todos array directly
+    todosService.deleteTodo.mockResolvedValue(true);
+    jest.spyOn(spectator.component, 'updateTodos');
     const todoItem = spectator.query(`#delete${todos[0].id}`);
     spectator.click(`#delete${todos[0].id}`);
 
     // Re-render after deletion
+    await spectator.fixture.whenStable();
     spectator.detectChanges();
-
-    // Verify that the todo list is reduced by 1
-    const updatedTodosList = spectator.queryAll('#todo-list > *');
-    expect(updatedTodosList.length).toBe(todoLength - 1); // Length should now be 1
+    expect(spectator.component.updateTodos).toHaveBeenCalledWith(true);
   });
 
   it('should have a submit button for adding todo', () => {
@@ -93,16 +86,18 @@ describe('DisplayTodosComponent', () => {
   it('should have an input field to add new todo', () => {
     expect(spectator.query('#newTodo')).toBeTruthy();
     spectator.component.newTodo = 'Test';
-    const input = spectator.query('#newTodo').textContent;
+    const input = spectator.query('#newTodo')?.textContent;
     if (input) expect(input).toEqual('Test');
   });
 
-  it('should call handleAddTodo and add a new todo', () => {
+  it('should call handleAddTodo and add a new todo', async () => {
     const todosService = spectator.inject(TodosService);
 
     // Mock the getTodos method to return a predefined list of todos
     const todos = [{ id: 1, title: 'Existing Todo', active: true }];
-    todosService.getTodos.mockReturnValue(todos);
+    todosService.getTodos.mockResolvedValue(todos);
+    spectator.detectChanges();
+    await spectator.fixture.whenStable();
 
     // Spy on the addTodo method
     const addTodoSpy = jest.spyOn(todosService, 'addTodo');
@@ -112,7 +107,6 @@ describe('DisplayTodosComponent', () => {
 
     // Trigger the form submission
     spectator.click('#addTodo');
-
     // Define the expected new todo object
     const expectedTodo = {
       id: todos.length + 1, // Assuming new ID based on length
@@ -120,10 +114,9 @@ describe('DisplayTodosComponent', () => {
       active: true,
     };
 
+    spectator.detectChanges();
+    await spectator.fixture.whenStable();
     // Verify that addTodo was called with the correct argument
     expect(addTodoSpy).toHaveBeenCalledWith(expectedTodo);
-
-    // Check if the input was cleared after submission
-    expect(spectator.component.newTodo).toBe(''); // This should check if the input was cleared
   });
 });

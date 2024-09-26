@@ -25,7 +25,7 @@ export class TodoItemComponent {
 
   async handleDeleteClick(todo: Todo) {
     let retValue = await this.todosService.deleteTodo(todo);
-    this.change.emit(true);
+    if (retValue) this.change.emit(true);
   }
 
   handleCheckBox(todo: Todo) {
