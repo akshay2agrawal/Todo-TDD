@@ -1,5 +1,5 @@
-import knex from "knex";
-import db from "../db/db";
+import knex from 'knex';
+import db from '../db/db';
 
 interface Todo {
   title: string;
@@ -8,11 +8,15 @@ interface Todo {
 
 export class TodosController {
   async addTodo(todo: Todo): Promise<Todo[]> {
-    return db("todos")
+    return db('todos')
       .insert({
         title: todo.title,
         active: todo.active,
       })
-      .returning("*"); // Return the inserted records
+      .returning('*'); // Return the inserted records
+  }
+
+  async deleteTodo(todo: Todo) {
+    db('todos').where('title', todo.title).del();
   }
 }

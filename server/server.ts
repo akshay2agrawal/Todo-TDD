@@ -26,6 +26,7 @@ const todosController = new TodosController();
 
 async function seedDb() {
   // Use the instance to call addTodo
+  await db('todos').del();
   await db.raw('ALTER SEQUENCE todos_id_seq RESTART WITH 1');
 
   todos.forEach(async (todo) => {
@@ -38,17 +39,18 @@ seedDb();
 
 // Define tRPC router with different procedures
 const appRouter = t.router({
-  getTodo: t.procedure.query(() => {
-    return todos;
+  getTodo: t.procedure.query(async () => {
+    return await db.select().table('todos');
   }),
   deleteTodo: t.procedure
     .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
-    .mutation(({ input }) => {
+    .mutation(async ({ input }) => {
       const index = todos.findIndex((t) => t.id === input.id);
       todos.splice(index, 1);
       todos.map((todo, index) => {
         todo.id = index;
       });
+      await db('todos').where('title', input.title).del();
       console.log(todos);
       return todos;
     }),
