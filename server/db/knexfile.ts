@@ -2,7 +2,7 @@ import { knex, type Knex } from 'knex';
 
 // Update with your config settings.
 
-const config: { [key: string]: Knex.Config } = {
+const knexConfig: { [key: string]: Knex.Config } = {
   development: {
     client: 'postgresql',
     connection: {
@@ -20,5 +20,4 @@ const config: { [key: string]: Knex.Config } = {
   },
 };
 
-const db = knex(config.development);
-export default db;
+export default knexConfig;

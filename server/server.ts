@@ -8,7 +8,10 @@ import * as trpcExpress from '@trpc/server/adapters/express';
 import { z } from 'zod';
 import { todo } from 'node:test';
 import { input } from '@angular/core';
+import { TodosController } from './controllers/todos';
 
+import { title } from 'node:process';
+import db from './db/db';
 // Initialize tRPC
 const t = initTRPC.create();
 
@@ -19,6 +22,19 @@ const todos = [
   { id: 4, title: 'Meet with friends', active: true },
   { id: 5, title: 'Clean the house', active: true },
 ];
+const todosController = new TodosController();
+
+async function seedDb() {
+  // Use the instance to call addTodo
+  await db.raw('ALTER SEQUENCE todos_id_seq RESTART WITH 1');
+
+  todos.forEach(async (todo) => {
+    await todosController.addTodo({ title: todo.title, active: todo.active });
+  });
+  console.log('completed seeding');
+}
+
+seedDb();
 
 // Define tRPC router with different procedures
 const appRouter = t.router({
@@ -38,12 +54,17 @@ const appRouter = t.router({
     }),
   addTodo: t.procedure
     .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
-    .mutation(({ input }) => {
+    .mutation(async ({ input }) => {
       console.log('> Adding todo: ', input);
       todos.push(input);
-      console.log('> Updated Todos: ', todos);
+      let response = await todosController.addTodo({
+        title: input.title,
+        active: input.active,
+      });
+      console.log('> Added with id: ', response);
       return todos;
     }),
+
   changeActive: t.procedure
     .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
     .mutation(({ input }) => {

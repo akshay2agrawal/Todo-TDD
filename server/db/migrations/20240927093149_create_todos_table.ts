@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('todos', (table) => {
     table.increments('id').primary();
     table.string('title').notNullable();
-    table.boolean('active').unique().notNullable();
+    table.boolean('active').notNullable();
   });
 }
 
