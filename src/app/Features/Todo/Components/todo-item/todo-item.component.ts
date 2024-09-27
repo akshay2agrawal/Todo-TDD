@@ -28,8 +28,8 @@ export class TodoItemComponent {
     if (retValue) this.change.emit(true);
   }
 
-  handleCheckBox(todo: Todo) {
-    this.todosService.changeActive(todo);
+  async handleCheckBox(todo: Todo) {
+    await this.todosService.changeActive(todo);
     this.change.emit(true);
   }
 

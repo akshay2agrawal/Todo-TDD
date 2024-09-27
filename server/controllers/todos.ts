@@ -19,4 +19,19 @@ export class TodosController {
   async deleteTodo(todo: Todo) {
     db('todos').where('title', todo.title).del();
   }
+
+  async getTodos() {
+    return db('todos').select();
+  }
+
+  async changeActive(todo: Todo) {
+    console.log('active: ', todo.active);
+    await db('todos').where('title', todo.title).update({
+      active: !todo.active,
+    });
+  }
+
+  async getTodoById(id: number) {
+    return db('todos').where('id', id).select('id');
+  }
 }

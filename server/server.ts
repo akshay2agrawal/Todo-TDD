@@ -40,51 +40,46 @@ seedDb();
 // Define tRPC router with different procedures
 const appRouter = t.router({
   getTodo: t.procedure.query(async () => {
-    return await db.select().table('todos');
+    return todosController.getTodos();
   }),
   deleteTodo: t.procedure
     .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
     .mutation(async ({ input }) => {
-      const index = todos.findIndex((t) => t.id === input.id);
-      todos.splice(index, 1);
-      todos.map((todo, index) => {
-        todo.id = index;
-      });
-      await db('todos').where('title', input.title).del();
-      console.log(todos);
-      return todos;
+      return await db('todos').where('title', input.title).del().returning('*');
     }),
   addTodo: t.procedure
     .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
     .mutation(async ({ input }) => {
-      console.log('> Adding todo: ', input);
-      todos.push(input);
       let response = await todosController.addTodo({
         title: input.title,
         active: input.active,
       });
       console.log('> Added with id: ', response);
-      return todos;
+      return await todosController.getTodos();
     }),
 
   changeActive: t.procedure
     .input(z.object({ id: z.number(), title: z.string(), active: z.boolean() }))
-    .mutation(({ input }) => {
+    .mutation(async ({ input }) => {
       console.log('> changing  todo: ', input);
-      const index = todos.findIndex((t) => t.id === input.id);
-      todos[index].active = !todos[index].active;
-      console.log('> changing Todos: ', todos);
-      return todos;
+      await todosController.changeActive({
+        title: input.title,
+        active: input.active,
+      });
+      let todosList = await todosController.getTodos();
+      console.log('> changing Todos: ', todosList);
+      return todosList;
     }),
+
   getTodoById: t.procedure
     .input(z.object({ id: z.number() })) // Input validation with Zod
-    .query(({ input }) => {
+    .query(async ({ input }) => {
       console.log('>Fetching todo by id: ', input.id);
-      const todo = todos.find((todo) => todo.id === input.id);
-      if (!todo) {
-        throw new Error(`Item with id ${input.id} not found`);
+      try {
+        const todo = await todosController.getTodoById(input.id);
+      } finally {
+        return todo; // Returns the todo with the matching ID
       }
-      return todo; // Returns the todo with the matching ID
     }),
 });
 
